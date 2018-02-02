@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>API Central</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="stylesheet/style.css">
+  <link rel="icon" type="image/x-icon" href="images/globe.ico">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
+</head>
+
+
+<body>
+
+<!-- /* top header */ -->
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+   
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <a class="navbar-brand" href="/">Tumblr API Guide</a>
+        <a class="navbar-brand" href="/github">Github API Guide</a>
+      </ul>
+    </div>
+  </div>
+</nav>
+  
+ 
+<div class="container-fluid text-center">    
+  <div class="row content">
+
+ <!-- left side box -->
+   <div class="col-sm-2 sidenav">
+      <div class="well">
+      <% include templates/header.ejs %>
+      </div>
+    </div>
+
+
+
+ <!-- middle box -->
+    <div class="col-sm-8 text-left"> 
+      <% include templates/banner.ejs %>
+    
+      <hr>
+      <h3>Create a Tumblr Account</h3>
+      
+      <p>1. The first thing that we needed to do before getting the API key is to create a Tumblr account here at this <a href="https://www.tumblr.com/register" target="_blank">link</a>.
+      <p>2. Once that is done, we can move on to register for an <a href="https://www.tumblr.com/docs/en/api/v2" target=_"blank">application</a> in order to get the API keys. Once we reach the site, there's a link that says "Get an OAuth Key: register an application," which we would need to click on. Once we reach the page shown below, click on the "+ Register Application" green button.
+
+    <div class="container-fluid">
+      <div class="register">
+       <img src="images/registerkey.jpg" class="img-responsive" alt="Chania">
+      </div>
+    </div>
+
+
+      <p> After that is done, another page will show up, and it will ask us to fill in the following informations. Application name, application website, administrative contact email, and defeault callback URL are all required fields, while the rest are optional. Application name can be anything, while application website and default callback URL can be any valid dummy website links for now since we are creating a local web server. For real web applications, we would use the URL of the main website. 
+      </p>
+
+      <div class="container-fluid">
+      <div class="fillin">
+       <img src="images/fillin.jpg" class="img-responsive" alt="Chania">
+      </div>
+    </div>
+
+      <p> 
+      Once we are done registering for an application, we can view our OAuth Consumer Key, and Secret Key, both of which will be required to use all of Tumblr's API. Let's move on to the next page where we can start setting up our website to use the Tumblr's API with node.js and express-handlebars. 
+      </p>
+
+
+      <p>Note: If you weren't able to get the keys from the website for some reason, my keys can be temporarily used which I will put down below. We only need the consumer key for this guide, but the secret key is necessary for more advance authentication. </p>
+
+      <pre>
+      Consumer Key: f92smiWRexvzEL6eIYgC3SMJ4szSCZEvpqiwP9LD5OISyE8eH8
+      Secret Key: jALPae5FBibaWblZIpnBWfJ0Ss34LYZHT3KmJyLRAWYVvussfz
+      </pre>
+
+
+      <p>
+        <a class="btn btn-warning btn-sml" href="/intro" role="button">&laquo; Previous </a> 
+        <a class="btn btn-warning btn-sml" href="/setup" role="button">Continue &raquo;</a>
+      </p>
+
+    </div>
+
+
+<!-- /* right side box */ -->
+    <div class="col-sm-2 sidenav">
+     <div class="well">
+        <a href="/about"><p>About</p></a>
+      </div>
+
+      <div class="well">
+        <a href="/contact"><p>Contact</p></a>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+
+<footer class="container-fluid text-center">
+  <p>&copy; James Le 2018 </p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>API Central</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="stylesheet/style.css">
+  <link rel="icon" type="image/x-icon" href="images/globe.ico">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+</head>
+
+
+<body>
+
+<!-- /* top header */ -->
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+   
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <a class="navbar-brand" href="/">Tumblr API Guide</a>
+        <a class="navbar-brand" href="/github">Github API Guide</a>
+      </ul>
+    </div>
+  </div>
+</nav>
+  
+ 
+<div class="container-fluid text-center">    
+  <div class="row content">
+
+ <!-- left side box -->
+    <div class="col-sm-2 sidenav">
+      <div class="well">
+      <% include templates/header.ejs %>
+      </div>
+    </div>
+
+
+
+ <!-- middle box -->
+  <div class="col-sm-8 text-left"> 
+      
+  
+    <% include templates/banner.ejs %>
+  
+    <hr>
+    <h3>Retrieve Data from Tumblr!</h3>
+      
+   
+   <p>We can finally get to see how Tumblr's API works.</p>
+
+    <p> Before we start the API going, I'll explain what some of the codes do. </p>
+
+
+
+
+<p> Here we have the html page where it displays a form for you to search for a Tumblr user. It is part of the express handlebar package and the form is used to retreive data from the website through function calls in created in checker.js file. The function call uses Tumblrs modules to be able to request the data, and will respond those data back to the user.
+</p>
+
+<pre>
+&lt;form action="/requestData" method="GET"&gt;
+  &lt;fieldset>
+    &lt;legend&gt;&lt;h2&gt;Search for a User&lt;/h2&gt;&lt;/legend&gt;
+    &lt;label for="user"&gt;User&lt;/label&gt;
+    &lt;input type="text" name="userid" id="userid"&gt;
+    &lt;input type="submit" name="submit"&gt;
+  &lt;/fieldset&gt;
+&lt;/form&gt;
+</pre>
+
+<div class="container-fluid">
+    <div class="register">
+     <img src="images/request.jpg" class="img-responsive" alt="Chania">
+    </div>
+</div>
+
+
+<p> 
+ Here is what the user will see after requesting the data from the website. This express handlebar file will display all the information that the user requested. The file will render the avatar image, title, name, number of posts, and description of the Tumblr user after the function call.
+</p>
+
+ <pre>
+&lt;img src={{image}}&gt;
+&lt;p&gt;Title: {{title}}&lt;/p&gt;
+&lt;p&gt;Name: {{name}}&lt;/p&gt;
+&lt;p&gt;Posts: {{posts}}&lt;/p&gt;
+&lt;p&gt;Description: {{description}}&lt;/p&gt;
+</pre>
+
+<div class="container-fluid">
+    <div class="register">
+     <img src="images/respond.jpg" class="img-responsive" alt="Chania">
+    </div>
+</div>
+
+
+<p>Here is where the main node.js file is and contains all functions and variables needed to retreive the data. </p>
+
+<pre>
+var express = require('express');
+var app = express();
+var handlebars = require('express-handlebars').create({defaultLayout:'main'});
+var request = require('request');
+
+app.engine('handlebars', handlebars.engine);
+app.set('view engine', 'handlebars');
+app.set('port', 3001);
+
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
+
+var apiKey = "f92smiWRexvzEL6eIYgC3SMJ4szSCZEvpqiwP9LD5OISyE8eH8";
+
+app.get('/', function(req, res){
+  res.render('request');
+});
+
+app.get('/requestData',function(req,res,next){
+   var context = {};
+   var blogname = req.query.userid; 
+   context.blogname = blogname; 
+
+   request('https://api.tumblr.com/v2/blog/' + blogname + '.tumblr.com/info?api_key=' + apiKey, function(err, response, body){
+
+     var avatar = 'https://api.tumblr.com/v2/blog/'+ blogname+ '.tumblr.com/avatar/128';
+     var data = JSON.parse(body);
+     context.image = avatar;
+     context.title = data.response.blog.title; 
+     context.name = data.response.blog.name; 
+     context.posts = data.response.blog.posts; 
+     context.description = data.response.blog.description;
+
+     return res.render('receiveData',context);
+ });
+});
+
+app.listen(app.get('port'), function(){
+  console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.')
+});
+</pre>
+
+
+<p> 
+In this line we have the url and the blogname along with the api_key that is needed to access sensitive information on Tumblr. This is the key that we get when we register for an application on the Tumblr's <a href="https://www.tumblr.com/docs/en/api/v2" target=_"blank">website</a>. The api_key= requires the consumer key (apiKey), and that's where it would go on the url.
+</p>
+
+<pre>
+  var apiKey = "f92smiWRexvzEL6eIYgC3SMJ4szSCZEvpqiwP9LD5OISyE8eH8";
+
+  'https://api.tumblr.com/v2/blog/' + blogname + '.tumblr.com/info?api_key=' + apiKey
+</pre>
+
+
+
+<p> Here is where the function call is, and is requesting data from Tumblr. The data is then rendered in JSON format, othwerise known as JavaScript Object Notation, and is sent back to the user to see on the webpage. </p>
+
+<pre>
+request('https://api.tumblr.com/v2/blog/' + blogname + '.tumblr.com/info?api_key=' + apiKey, function(err, response, body){
+
+     var avatar = 'https://api.tumblr.com/v2/blog/'+ blogname+ '.tumblr.com/avatar/128';
+     var data = JSON.parse(body);
+     context.image = avatar;
+     context.title = data.response.blog.title; 
+     context.name = data.response.blog.name; 
+     context.posts = data.response.blog.posts; 
+     context.description = data.response.blog.description;
+
+     return res.render('userData',context);
+</pre>
+
+
+
+
+<p> 
+   The next step is to open up the command prompt within myapp directory, then type in node checker.js. Node.js will process the codes and launch the website to a local server with port 3000. Open up any browser, preferrably Google Chrome, and type in localhost:3000, and a box will display. You can now type in the user id name of any Tumblr's users and see what their title, name, posts, and description are!
+</p>
+
+ <p>Again, shown below is a sample illustration of how the API would be like.</p>
+
+<pre>
+  <p>USER ID <input type="text" id="search_bar" /><button type="submit" id="search_button">Search</button></p>
+  <p>Title: <span id="tumblr_title"> </span></p>
+  <p>Name: <span id="tumblr_name"> </span></p>
+  <p>Posts: <span id="tumblr_posts"> </span></p>
+  <p>Description: <span id="tumblr_desc"></span></p>
+  <div id="tumblr_search"></div>
+</pre>
+
+
+<p></p>
+<p>
+And that is it! We have cover all the basics needed to retreive blog data informations and image. There are still a lot more to be covered still, but that is for some times in the future. Have fun searching for Tumblr user's information!
+</p>
+<p></p>
+
+<script>
+$(document).ready(function() {
+  
+  //Store given consumer key
+  var client =  'f92smiWRexvzEL6eIYgC3SMJ4szSCZEvpqiwP9LD5OISyE8eH8';
+  
+    
+  // click function 
+   $('#search_button').click(function(){
+     
+     // get value from textbox
+     var urlTumblrRaw = $('#search_bar').val();
+     // getting rid of http protocol sintax 
+     var urlTumblr = urlTumblrRaw.replace(/.*?:\/\//g, "");
+
+  
+     //run ajax call and pass parameter from search
+     $.ajax({
+    
+       url: 'http://api.tumblr.com/v2/blog/' + urlTumblr.replace('/', '') + '/posts',
+       method: 'get',
+       // make sure to use jsonp. It is a requirement to consume the Tumblr api
+       dataType: "jsonp",
+       data: ({ api_key: client}),
+       // upon sucess exceute the following code
+       success: function(data){
+           console.log(data);
+           
+           // check if  input is returning object with data
+           if((data.response).length === 0){
+             $('#tumblr_search').html('no data returned, make sure you entered a Tumblr url');
+             } 
+
+             else {
+          //check if seach has been already excuted and clean the div for the next search
+          if($('#tumblr_search').not(':empty')){
+            $('#tumblr_search').empty();
+          }
+          
+          // variables to access the object returned
+          var objectBlog = data.response.blog;
+
+          var objectPosts = data.response.posts;
+
+          // getting title of the tumblr
+          //$('#title_tumblr').html(objectBlog.title + ' recent blog posts');
+          
+          $('#tumblr_title').html(objectBlog.title);
+          $('#tumblr_name').html(objectBlog.name);
+          $('#tumblr_posts').html(objectBlog.posts);
+          $('#tumblr_desc').html(objectBlog.description);
+          
+          
+          // each loop to go through all the post
+          $.each(objectPosts, function(key, value){
+            //just retrieving post that have photos
+            if(value.type === "photo"){
+              // inner each loop to go through all the photos for each post
+              $.each(value.photos, function(k, v){
+                  //append image
+                  $('#tumblr_search').append(
+                    '<img src="' + v.original_size.url + '" width="250" height="259" />'
+                  );
+                });// end inner each
+              
+              // caption for each post
+              $('#tumblr_search').append(value.caption + '<hr />');
+            }
+            });// end each 
+            
+
+         } // end success function
+       }
+       }); // end ajax call
+     
+     }); // end click function
+  
+}); // end of document.ready
+
+</script>
+
+
+
+      <p>
+        <a class="btn btn-warning btn-sml" href="/setup" role="button">&laquo; Previous </a> 
+      </p>
+
+  </div>
+
+
+<!-- /* right side box */ -->
+    <div class="col-sm-2 sidenav">
+
+      <div class="well">
+        <a href="/about"><p>About</p></a>
+      </div>
+
+      <div class="well">
+        <a href="/contact"><p>Contact</p></a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+<footer class="container-fluid text-center">
+  <p>&copy; James Le 2018 </p>
+</footer>
+
+</body>
+</html>

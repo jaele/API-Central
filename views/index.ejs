@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>API Central</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="stylesheet/style.css">
+  <link rel="icon" type="image/x-icon" href="images/globe.ico">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  
+  
+
+</head>
+
+
+<body>
+
+<!-- /* top header */ -->
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+   
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <a class="navbar-brand" href="/">Tumblr API Guide</a>
+        <a class="navbar-brand" href="/github">Github API Guide</a>
+      </ul>
+    </div>
+  </div>
+</nav>
+  
+ 
+<div class="container-fluid text-center">    
+  <div class="row content">
+
+ <!-- left side box -->
+    <div class="col-sm-2 sidenav">
+      <div class="well">
+      <% include templates/header.ejs %>
+      </div>
+    </div>
+
+
+
+ <!-- middle box -->
+  <div class="col-sm-8 text-left"> 
+      
+  
+    <% include templates/banner.ejs %>
+  
+    <hr>
+    <h3>Greetings</h3>
+      
+   
+<div class="container-fluid">
+    <div class="register">
+     <img src="images/tumblr.jpg" class="img-responsive" alt="Chania">
+    </div>
+</div>
+
+  <p></p>
+ 
+    <p>
+    Tumblr is a popular microblogging platform and social networking website founded David Karp in 2007, and is now owned by Yahoo!. Tumblr is a place where users can create blogs and comment/make posts on other people's blog. They can share photos around, much like Twitter, another popular social media network, and can also share musics(from SoundCloud) and videos(from Youtube) as well.
+    </p>
+
+
+   <p> 
+    This is a cumulative guide on how to implement and use Tumblr's API via node.js with express-handlebars to extract data from Tumblr's users. Basic javascript skills are required for this guide, and there will be a comprehensive step by step method on getting Tumblr's API to work. The guide will include images that will help the user follow through, and links to Tumblr's page for documentation. The images will contain snippets of codes require to run the API. 
+    </p>
+
+    <p>Here is a sample illustration of how the API would be like. You can enter in any Tumblr's account below to find out! For instance, try typing in starwars in the search box below to request data from the account. </p>
+
+<pre>
+  <p>USER ID <input type="text" id="search_bar" /><button type="submit" id="search_button">Search</button></p>
+  <p>Title: <span id="tumblr_title"> </span></p>
+  <p>Name: <span id="tumblr_name"> </span></p>
+  <p>Posts: <span id="tumblr_posts"> </span></p>
+  <p>Description: <span id="tumblr_desc"></span></p>
+  <div id="tumblr_search"></div>
+</pre>
+
+
+<p></p>
+<p></p>
+
+<script>
+$(document).ready(function() {
+  
+  //Store given consumer key
+  var client =  'f92smiWRexvzEL6eIYgC3SMJ4szSCZEvpqiwP9LD5OISyE8eH8';
+  
+    
+  // click function 
+   $('#search_button').click(function(){
+     
+     // get value from textbox
+     var urlTumblrRaw = $('#search_bar').val();
+     // getting rid of http protocol sintax 
+     var urlTumblr = urlTumblrRaw.replace(/.*?:\/\//g, "");
+
+  
+     //run ajax call and pass parameter from search
+     $.ajax({
+    
+       url: 'http://api.tumblr.com/v2/blog/' + urlTumblr.replace('/', '') + '/posts',
+       method: 'get',
+       // make sure to use jsonp. It is a requirement to consume the Tumblr api
+       dataType: "jsonp",
+       data: ({ api_key: client}),
+       // upon sucess exceute the following code
+       success: function(data){
+           console.log(data);
+           
+           // check if  input is returning object with data
+           if((data.response).length === 0){
+             $('#tumblr_search').html('no data returned, make sure you entered a Tumblr url');
+             } 
+
+             else {
+          //check if seach has been already excuted and clean the div for the next search
+          if($('#tumblr_search').not(':empty')){
+            $('#tumblr_search').empty();
+          }
+          
+          // variables to access the object returned
+          var objectBlog = data.response.blog;
+
+          var objectPosts = data.response.posts;
+
+          // getting title of the tumblr
+          //$('#title_tumblr').html(objectBlog.title + ' recent blog posts');
+          
+          $('#tumblr_title').html(objectBlog.title);
+          $('#tumblr_name').html(objectBlog.name);
+          $('#tumblr_posts').html(objectBlog.posts);
+          $('#tumblr_desc').html(objectBlog.description);
+          
+          
+          // each loop to go through all the post
+          $.each(objectPosts, function(key, value){
+            //just retrieving post that have photos
+            if(value.type === "photo"){
+              // inner each loop to go through all the photos for each post
+              $.each(value.photos, function(k, v){
+                  //append image
+                  $('#tumblr_search').append(
+                    '<img src="' + v.original_size.url + '" width="250" height="259" />'
+                  );
+                });// end inner each
+              
+              // caption for each post
+              $('#tumblr_search').append(value.caption + '<hr />');
+            }
+            });// end each 
+            
+
+         } // end success function
+       }
+       }); // end ajax call
+     
+     }); // end click function
+  
+}); // end of document.ready
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+    <p>
+    Once ready, click continue to move on to the next step. 
+    </p>
+
+      <p>
+        <a class="btn btn-warning btn-sml" href="/intro" role="button">Continue &raquo;</a>
+      </p>
+
+  </div>
+
+
+<!-- /* right side box */ -->
+    <div class="col-sm-2 sidenav">
+
+      <div class="well">
+        <a href="/about"><p>About</p></a>
+      </div>
+
+      <div class="well">
+        <a href="/contact"><p>Contact</p></a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+<footer class="container-fluid text-center">
+  <p>&copy; James Le 2018 </p>
+</footer>
+
+</body>
+</html>
